@@ -5,13 +5,13 @@
 #include "common.h"
 #include "lib.h"
 
-/* ƒ}ƒNƒ */
+/* ãƒã‚¯ãƒ­ */
 #define DEBUG_Z80
 #define TX_BUF_SIZE	8
 #define RX_BUF_SIZE	8
 
-/* ŠÖ”éŒ¾ */
-// XCC-VƒRƒ“ƒpƒCƒ‰ê—p
+/* é–¢æ•°å®£è¨€ */
+// XCC-Vã‚³ãƒ³ãƒ‘ã‚¤ãƒ©å°‚ç”¨
 #if (C_COMPILER == COMPILER_XCC_V)
 global main();
 #endif
@@ -20,7 +20,7 @@ extern void* lib_memset(void *a_buf, uint8 val,size_t size);
 extern void NOP();
 static void app_init(void);
 
-/* •Ï”éŒ¾ */
+/* å¤‰æ•°å®£è¨€ */
 // const uint8 *g_msgbuf = "TMPZ84C015BF-8 KBC-Z05";
 uint8 g_txbuf[TX_BUF_SIZE] = {0};
 uint8 g_rxbuf[RX_BUF_SIZE] = {0};
@@ -35,10 +35,10 @@ main()
 {
     //uint32 cnt;
 
-	// ‰Šú‰»ˆ—
+	// åˆæœŸåŒ–å‡¦ç†
 	app_init();
 
-    // ƒƒCƒ“ƒ‹[ƒv
+    // ãƒ¡ã‚¤ãƒ³ãƒ«ãƒ¼ãƒ—
     while (1)
     {
         NOP();

@@ -2,7 +2,7 @@
 #include "lib.h"
 #include "interrupt.h"
 
-// ŠO•”Š„‚İISR
+// å¤–éƒ¨å‰²è¾¼ã¿ISR
 __interrupt void ext_int_isr()
 {
     NOP();

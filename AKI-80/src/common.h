@@ -40,7 +40,7 @@ typedef enum
 #define CPU_TYPE    CPU_Z80
 #define C_COMPILER  COMPILER_XCC_V
 
-// Z80 GAIOŽÐ XCC-VƒRƒ“ƒpƒCƒ‰
+// Z80 GAIOç¤¾ XCC-Vã‚³ãƒ³ãƒ‘ã‚¤ãƒ©
 #if (C_COMPILER == COMPILER_XCC_V) && (CPU_TYPE == CPU_Z80)
 /******************************/
 #define EXTERN global
