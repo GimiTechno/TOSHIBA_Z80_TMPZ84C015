@@ -1,0 +1,65 @@
+;********************************************************
+;*		Startup Program for Z80			*
+;********************************************************
+;-------------------------------+
+;	Stack	(RAM)		+
+;-------------------------------+
+_STACK	sect	stak
+	ds	100h
+_STACK_END:
+;-------------------------------+
+;	init section	(ROM)	+
+;-------------------------------+
+_INIT_DATA	sect	comm
+;-------------------------------+
+;	Control data	(RAM)	+
+;-------------------------------+
+D_DATA	sect	comm
+	global	_errno
+_errno	dw	0	;for math lib
+;
+;=======================================+
+;	startup routine	(ROM)		+
+;=======================================+
+C_start	sect	code
+_start:
+	ld	HL,_STACK_END		;Set Stack Pointer
+	ld	SP,HL
+;*** init PORT,TIMER,...etc
+;	:
+;	:
+;================= clear BSS ====================
+	extnal	_BSS_TOP,_BSS_SIZE
+	ld	A,0
+	ld	DE,_BSS_TOP
+	ld	HL,_BSS_SIZE
+	ld	BC,0
+	or	A
+	adc	HL,BC
+	jr	z,L110$
+	dec	BC
+L100$:
+	ld	(DE),A
+	inc	DE
+	or	A
+	adc	HL,BC
+	jr	nz,L100$
+L110$:
+;================= init DATA ====================
+	extnal	_DATA_TOP,_DATA_SIZE
+	ld	HL,_INIT_DATA
+	ld	DE,_DATA_TOP
+	ld	BC,_DATA_SIZE
+	ld	A,B
+	or	C
+	jr	z,L210$
+L200$:
+	ldi
+	jp	pe,L200$
+L210$:
+;*** call main ***
+	extnal	_main
+	call	_main
+300$:
+	jr	300$
+	end	_start

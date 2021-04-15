@@ -1,0 +1,49 @@
+#v4.3
+//++++++++++++++++++++++++++++
+// XASS-V PROJECT-FILE (v4.3) 
+//++++++++++++++++++++++++++++
+
+// PROJECT INFOMATION.
+PROJ_DIR=C:\Git\TOSHIBA_Z80_TMPZ84C015\AKI-80
+INSTALL=C:\akiz80
+SUB_DIR=obj
+MPU=z80
+PROJ_TYPE=STD
+BUILD_ERR=1
+ERROR_MSG_ALL=11
+
+
+// BUILD OPTION.
+XCC_FLAG_ALL=-d -ks -w -LW1 -LE2 -S
+XCC_FLAG_OTHER=-d -ks -w -LW1 -LE2
+CPLUS_FLAG_ALL=--this
+CPLUS_FLAG_OTHER=--this
+XMC_FLAG_ALL=0,
+XMC_FLAG_OTHER=0,
+XAS_FLAG_ALL=-r -a -da
+XAS_FLAG_OTHER=-r -a -da
+XLK_FLAG=-l -m -s -d -o
+XOT_FLAG=-t obj1,sym7
+XDB_SEM_MODE=1
+XLK_PAR_FILE=AKI_80.xls
+XLK_OBJ_FILE=AKI_80.xlo
+XLK_PAR_AUTO=1
+
+// INCLUDE FILE'S
+INCLUDE=src\lib.h,1
+INCLUDE=%INSTROOT\INCLUDE\STDIO.H,2
+INCLUDE=src\common.h,3
+INCLUDE=src\interrupt.h,4
+
+// FILE'S OPTION
+
+// SOURCE FILE'S
+SOURCE=src\app_lib.c,1:2:3,,,,,,,
+SOURCE=src\common.h,,,,,,,,
+SOURCE=src\interrupt.h,,,,,,,,
+SOURCE=src\isr.c,1:2:3:4,,,,,,,
+SOURCE=src\lib.h,2:3,,,,,,,
+SOURCE=src\main.c,1:2:3,,,,,,,
+SOURCE=src\STARTUP.XAS,,,,,,,,
+
+// USER FILE'S

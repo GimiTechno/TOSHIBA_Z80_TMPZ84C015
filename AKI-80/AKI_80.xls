@@ -1,0 +1,29 @@
+;-------------------------------+			
+;	RAM Area		|
+;-------------------------------+			
+/ADDR=8000			
+/SECT=D_*|COMM		(data	=_DATA)
+/SECT=B_*|COMM		(bss	=_BSS)
+/SECT=_STACK			
+;-------------------------------+			
+;	ROM Area		|
+;-------------------------------+			
+/ADDR=0			
+/SECT=C_*|CODE			
+/SECT=I_*			
+;-------------------------------+			
+;	init data section	+	
+;-------------------------------+			
+/init_section = _INIT_DATA	(_DATA)		
+;-------------------------------+			
+;	linkage module		|
+;-------------------------------+			
+/Name=AKI_80
+/modl=startup
+/modl=main
+/modl=app_lib
+/slib=c:\akiz80\lib\z80\cs\csze1.xlb
+/Module=common.xao
+/Module=interrupt.xao
+/Module=isr.xao
+/Module=lib.xao
