@@ -52,20 +52,17 @@
 #define SIO_CMD_INT_VECTOR_LOWWER           0x50
 #define SIO_CMD_TX_INT_RESET                0x28
 
-#define RR0_TXEMPTY    0x04    // 第2ビットが送信バッファ空ビット
+#define RR0_BIT_2_TXEMPTY                   0x04    // 送信バッファ空(Bit 2)
+#define RR0_BIT_0_RX_CAHRACTER_AVAILABLE    0x01    // 受信データあり(Bit 0)
 
-#define TX_BUF_SIZE    128    // 送信リングバッファサイズ
-#define RX_BUF_SIZE    128    // 受信リングバッファサイズ
 #define CMD_BUF_SIZE    30    // 送受信コマンド（パケット）サイズ
 
 #define RX_OK           0x01  // 受信完了
 #define RX_NOW          0x00  // 受信中
 #define RX_NG           0xFF  // 受信バッファOVF(≒オーバラン)
 
-extern void drv_sio_init( void );
-extern void drv_sio_tx( uint8 * );
-extern uint16 drv_sio_a_rx( void );
-
-#define PIO_PRINT   drv_sio_tx
+void drv_sio_init( void );
+void drv_sio_tx( uint8 *p_tx_buf, uint16 len );
+void drv_sio_rx( uint8 *p_rx_buf, uint16 len );
 
 #endif /* _SIO_Z84C015_H_ */

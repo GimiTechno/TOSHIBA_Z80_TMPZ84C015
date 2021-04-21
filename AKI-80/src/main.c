@@ -13,6 +13,8 @@
 
 /* マクロ */
 #define DEBUG_Z80
+#define TX_BUF_SIZE    32    // 送信バッファサイズ
+#define RX_BUF_SIZE    128    // 受信バッファサイズ
 
 /* 関数宣言 */
 // XCC-Vコンパイラ専用
@@ -24,9 +26,12 @@ extern void* lib_memset(void *a_buf, uint8 val,size_t size);
 extern void NOP();
 static void app_hw_init(void);
 static void app_init(void);
+static void app_sio_polling_main(void);
+
 
 /* 変数宣言 */
-
+static uint8 s_tx_buf[TX_BUF_SIZE];     /* SIO TXバッファ */
+static uint8 s_rx_buf[RX_BUF_SIZE];     /* SIO RXバッファ */
 
 /**
  * @brief H/W初期化
@@ -53,7 +58,42 @@ static void app_hw_init(void)
  */
 static void app_init(void)
 {
-    //
+#ifdef DEBUG_Z80
+    uint16 cnt;
+
+    // SIO送受信バッファ初期化
+    lib_memset(&s_tx_buf[0], 0x00 ,sizeof(s_tx_buf));
+    lib_memset(&s_rx_buf[0], 0x00 ,sizeof(s_rx_buf));
+
+    // SIO送信バッファにテストデータ詰め込み
+    for(cnt = 0; cnt < (uint8)sizeof(s_tx_buf); cnt++)
+    {
+        DI();
+        s_tx_buf[cnt] = cnt;
+        EI();
+    }
+#endif
+}
+
+/**
+ * @brief SIO ポーリングメイン
+ * 
+ */
+static void app_sio_polling_main(void)
+{
+#ifdef DEBUG_Z80
+    uint16 rx_len;
+
+    // 受信確認&データ受信
+    drv_sio_rx(&s_rx_buf[0], rx_len);
+
+    // 何も受信がなければ
+    if(rx_len != 0)
+    {
+        // SIOドライバに送信バッファを渡して送信
+        drv_sio_tx(&s_tx_buf[0], sizeof(s_tx_buf));
+    }
+#endif
 }
 
 /**
@@ -66,14 +106,20 @@ main()
     app_hw_init();
     EI();
 
+#ifdef WDT_ENABLE
+        WDT_CLR();
+#endif
+
 	// アプリ初期化処理
 	app_init();
 
     // メインループ
     while (1)
     {
-        sio_main();
+        // SIO Main (Polling)
+        app_sio_polling_main();
+#ifdef WDT_ENABLE
+        WDT_CLR();
+#endif
     }
-
-    return 0;
 }
