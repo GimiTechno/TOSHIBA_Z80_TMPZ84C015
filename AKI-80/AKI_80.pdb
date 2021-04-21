@@ -33,17 +33,28 @@ XLK_PAR_AUTO=1
 INCLUDE=src\lib.h,1
 INCLUDE=%INSTROOT\INCLUDE\STDIO.H,2
 INCLUDE=src\common.h,3
-INCLUDE=src\interrupt.h,4
+INCLUDE=src\tmpz84c015.h,4
+INCLUDE=src\sio.h,5
+INCLUDE=src\wdt.h,6
 
 // FILE'S OPTION
 
 // SOURCE FILE'S
 SOURCE=src\app_lib.c,1:2:3,,,,,,,
 SOURCE=src\common.h,,,,,,,,
-SOURCE=src\interrupt.h,,,,,,,,
-SOURCE=src\isr.c,1:2:3:4,,,,,,,
+SOURCE=src\isr.c,1:2:3,,,,,,,
 SOURCE=src\lib.h,2:3,,,,,,,
-SOURCE=src\main.c,1:2:3,,,,,,,
+SOURCE=src\main.c,1:2:3:4:5,,,,,,,
 SOURCE=src\STARTUP.XAS,,,,,,,,
+SOURCE=src\tmpz84c015.h,,,,,,,,
+SOURCE=src\Z84c015.c,4,,,,,,,
+SOURCE=src\sio.h,3:4,,,,,,,
+SOURCE=src\sio_drv.c,1:2:3:4:5,,,,,,,
+SOURCE=src\wdt.h,3:4,,,,,,,
+SOURCE=src\wdt_drv.c,3:4:6,,,,,,,
+SOURCE=src\ctc.h,,,,,,,,
+SOURCE=src\ctc_drv.c,,,,,,,,
+SOURCE=src\pio.h,,,,,,,,
+SOURCE=src\pio_drv.c,,,,,,,,
 
 // USER FILE'S

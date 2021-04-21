@@ -1,14 +1,18 @@
 #include <stdio.h>
 //#include <string.h>
 
+// DRV Inc
+#include "ctc.h"
+#include "sio.h"
+#include "pio.h"
+#include "wdt.h"
+
 // APP Inc
 #include "common.h"
 #include "lib.h"
 
 /* マクロ */
 #define DEBUG_Z80
-#define TX_BUF_SIZE	8
-#define RX_BUF_SIZE	8
 
 /* 関数宣言 */
 // XCC-Vコンパイラ専用
@@ -18,33 +22,57 @@ global main();
 
 extern void* lib_memset(void *a_buf, uint8 val,size_t size);
 extern void NOP();
+static void app_hw_init(void);
 static void app_init(void);
 
 /* 変数宣言 */
-// const uint8 *g_msgbuf = "TMPZ84C015BF-8 KBC-Z05";
-uint8 g_txbuf[TX_BUF_SIZE] = {0};
-uint8 g_rxbuf[RX_BUF_SIZE] = {0};
 
-static void app_init(void)
+
+/**
+ * @brief H/W初期化
+ * 
+ */
+static void app_hw_init(void)
 {
-	MEMSET(&g_txbuf[0],0x00,sizeof(g_txbuf));
-	MEMSET(&g_rxbuf[0],0x00,sizeof(g_rxbuf));
+    /* CTC 初期化 */
+    drv_ctc_init();
+
+    /* PIO 初期化 */
+    drv_pio_init();
+
+    /* SIO 初期化 */
+    drv_sio_init();
+
+    /* WDT 初期化 */
+    drv_wdt_init();
 }
 
+/**
+ * @brief アプリ初期化
+ * 
+ */
+static void app_init(void)
+{
+    //
+}
+
+/**
+ * @brief メインループ
+ * 
+ */
 main()
 {
-    //uint32 cnt;
+    DI();
+    app_hw_init();
+    EI();
 
-	// 初期化処理
+	// アプリ初期化処理
 	app_init();
 
     // メインループ
     while (1)
     {
-        NOP();
-#ifdef DEBUG_Z80
-        //cnt++;
-#endif
+        sio_main();
     }
 
     return 0;

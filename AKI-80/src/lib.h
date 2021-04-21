@@ -7,12 +7,11 @@
 #include "common.h"
 
 // memset()
-
-// NOP (inline)
-void NOP();
-#pragma inline NOP
-
 void* lib_memset(void *a_buf, uint8 val,size_t size);
 #define MEMSET  lib_memset
+
+// strlen()
+uint16 lib_strlen( uint8 *p_buf );
+#define STRLEN  lib_strlen
 
 #endif /* _LIB_H_ */

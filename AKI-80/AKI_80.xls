@@ -24,6 +24,15 @@
 /modl=app_lib
 /slib=c:\akiz80\lib\z80\cs\csze1.xlb
 /Module=common.xao
-/Module=interrupt.xao
 /Module=isr.xao
 /Module=lib.xao
+/Module=tmpz84c015.xao
+/Module=Z84c015.xao
+/Module=sio.xao
+/Module=sio_drv.xao
+/Module=wdt.xao
+/Module=wdt_drv.xao
+/Module=ctc.xao
+/Module=ctc_drv.xao
+/Module=pio.xao
+/Module=pio_drv.xao
