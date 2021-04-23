@@ -8,11 +8,11 @@
  * @param size 初期化サイズ
  * @return void* 
  */
-void* lib_memset(void *p_buf, uint8 val,size_t size)
+void* lib_memset(void *p_buf, u1 val,size_t size)
 {
-    uint8 *p_tmp;
+    u1 *p_tmp;
 
-    p_tmp = (uint8 *)p_buf;
+    p_tmp = (u1 *)p_buf;
     while (size--)
     {
         *p_tmp = val;
@@ -26,12 +26,12 @@ void* lib_memset(void *p_buf, uint8 val,size_t size)
  * @brief 自前 strlen()
  * 
  * @param p_buf lengthのバッファ
- * @return uint16 バッファのlength
+ * @return u2 バッファのlength
  */
-uint16 lib_strlen( uint8 *p_buf )
+u2 lib_strlen( u1 *p_buf )
 {
-    uint16    len;
-    uint8    *p_str;
+    u2 len;
+    u1 *p_str;
 
     len = 0;
     p_str = p_buf;

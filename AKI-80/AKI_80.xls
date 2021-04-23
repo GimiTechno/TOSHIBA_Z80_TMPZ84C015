@@ -36,3 +36,4 @@
 /Module=ctc_drv.xao
 /Module=pio.xao
 /Module=pio_drv.xao
+/Module=typedef.xao

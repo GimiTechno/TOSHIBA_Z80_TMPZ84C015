@@ -22,51 +22,52 @@ void drv_sio_init( void )
     /* -------------------------------------------------------------------------------- */
     /* SIO A 初期化 */
     /* -------------------------------------------------------------------------------- */
-    REG_SIO_A_CMD = SIO_CMD_RESET;                  // SIO A リセット
+    SIO_A_CMD.REG.BYTE = SIO_CMD_RESET;                  // SIO A リセット
 
-    // WR1
-    REG_SIO_A_CMD = SIO_REG_WR1;
+    // WR1(割込み有効・無効)
+    SIO_A_CMD.REG.BYTE = SIO_WR1;
 #ifdef SIO_INT_ENABLE
-    REG_SIO_A_CMD = SIO_CMD_INT_ENABLE;             // 割込み許可
+    SIO_A_CMD.REG.BYTE |= (WR1_BIT_4_RX_INT_MODE_H    /* 受信割込み */
+                            | WR1_BIT_1_TX_INT_ENABLE   /* 送信割込み */
+                            | WR1_BIT_0_INT_ENABLE);     /* 外部割込み */
 #else
-    #ifdef SIO_TX_INT_DISABLE
-        REG_SIO_A_CMD = SIO_CMD_TX_INT_DISABLE;     // 割込み許可(送信割込み不可）
-    #endif
+    SIO_A_CMD.REG.BYTE &= ~(WR1_BIT_4_RX_INT_MODE_H /* 受信割込み */
+                            | WR1_BIT_1_TX_INT_ENABLE   /* 送信割込み */
+                            | WR1_BIT_0_INT_ENABLE);    /* 外部割込み */
+#endif
 
-    #ifdef SIO_RX_INT_DISABLE
-        REG_SIO_A_CMD = SIO_CMD_RX_INT_DISABLE;     // 割込み許可(受信割込み不可）
-    #endif
+    // WR2(割込み要因・割込みベクタ)
+#ifdef SIO_INT_ENABLE
+    SIO_A_CMD.REG.BYTE |= SIO_A_WR2_BIT_3_2_RX_CHAR; // 受信割込み
+    SIO_B_CMD.REG.BYTE |= SIO_B_WR2_BIT_3_RX_CHAR;   //受信割込み
 #endif
 
     // WR3
-    REG_SIO_A_CMD = SIO_REG_WR3;
-    REG_SIO_A_CMD = SIO_CMD_RX_ENABLE;              // 受信 有効
+    SIO_A_CMD.REG.BYTE = SIO_WR3;
+    SIO_A_CMD.REG.BYTE |= (WR3_BIT_7_RX_CHAR_LENGTH_H // 受信データ長8bit
+                            | WR3_BIT_0_RX_ENABLE);   // 受信 有効
 
     // WR4
-    REG_SIO_A_CMD = SIO_REG_WR4;
-    REG_SIO_A_CMD = SIO_CMD_CLOCK_X16_STOPBIT_1;    // ボーレート = Clock ×16 , ストップビット 1
+    SIO_A_CMD.REG.BYTE = SIO_WR4;
+    SIO_A_CMD.REG.BYTE |= (WR4_BIT_6_CLOCK_MODE_L     // Clock = x16
+                            | WR4_BIT_2_STOP_BIT_L);  // ストップビット 1
 
     // WR5
-    REG_SIO_A_CMD = SIO_REG_WR5;                    // WR5選択
+    SIO_A_CMD.REG.BYTE = SIO_WR5;                    // WR5選択
 #ifdef SIO_DTR_RTS_ENABLE
-    REG_SIO_A_CMD = SIO_CMD_DTR_RTS_ENABLE;         // DTR,RTS 有効
+    // 2021年現在、フロー制御はいらんからNOP
+    // NOP
 #else
-    REG_SIO_A_CMD = SIO_CMD_DTR_RTS_DISABLE;        // DTR,RTS 無効
+    SIO_A_CMD.REG.BYTE |=  (WR5_BIT_6_TX_CHAR_LENGTH_H // 送信データ 8bit(bit6,5=1)
+                            | WR5_BIT_5_TX_CHAR_LENGTH_L
+                            | WR5_BIT_3_TX_ENABLE);   // 送信有効
 #endif
 
 #if 0
     /* -------------------------------------------------------------------------------- */
     /* SIO B 初期化 */
     /* -------------------------------------------------------------------------------- */
-    REG_SIO_B_CMD = SIO_CMD_RESET;                  // リセット
-
-    // WR1
-    REG_SIO_B_CMD = SIO_REG_WR1;
-    REG_SIO_B_CMD = SIO_CMD_STATUS_AFFECTS_VECTOR;  // Status Affects Vector
-
-    // WR2
-    REG_SIO_B_CMD = SIO_REG_WR2;
-    REG_SIO_B_CMD = SIO_CMD_INT_VECTOR_LOWWER;       // 割込みベクタ（下位）
+    SIO_B_CMD = SIO_CMD_RESET;                  // リセット
 #endif
 }
 
@@ -76,29 +77,50 @@ void drv_sio_init( void )
  * @param p_tx_buf 送信バッファポインタ
  * @param len      送信データ長
  */
-void drv_sio_tx( uint8 *p_tx_buf, uint16 len)
+u1 drv_sio_tx( u1 *p_tx_buf, u2 len)
 {
-    uint8 val;
-    uint16 tx_size;
+    u1 ret = TX_OK;
+    u1 val;
+    u2 tx_size;
 
     // 送信データ長まですべて送信
     for(tx_size = 0; tx_size < len; tx_size++)
     {
-        REG_SIO_A_CMD = SIO_REG_RR0;    // RR0選択
-        val = REG_SIO_A_CMD;            // RR0読み込み
+
+#if 0 /* フレーミングエラー */
+        // RR1選択
+        SIO_A_CMD.REG.BYTE = SIO_RR1;
+        // RR1 bit6(送信フレーミングエラー) 読み込み
+        val = SIO_A_CMD.REG.BIT.B6;
+
+        // フレーミングエラー発生時
+        if(val != FALSE)
+        {
+            ret = TX_ERR;
+            break;
+        }
+#endif
+        ret = TX_OK;
+
+        // RR0選択
+        SIO_A_CMD.REG.BYTE = SIO_RR0;
+        // RR0 bit2(送信バッファ空き状態フラグ) 読み込み
+        val = SIO_A_CMD.REG.BIT.B2;
 
         // 送信バッファが空き待ち
-        while( ! (val & RR0_BIT_2_TXEMPTY)  )
+        while(val != TRUE)
         {
-            NOP();
+            val = SIO_A_CMD.REG.BIT.B2;
         }
 
         DI();
         // SIO A データレジスタに1Byteデータ詰め込み
-        REG_PIO_A_DAT = *p_tx_buf;
+        PIO_A_DAT.REG.BYTE = *p_tx_buf;
         p_tx_buf++;
         EI();
     }
+
+    return (ret);
 }
 
 /**
@@ -107,18 +129,30 @@ void drv_sio_tx( uint8 *p_tx_buf, uint16 len)
  * @param p_rx_buf  受信バッファポインタ
  * @param len       受信データ長
  */
-void drv_sio_rx( uint8 *p_rx_buf, uint16 len )
+u1 drv_sio_rx( u1 *p_rx_buf, u2 len )
 {
-    uint8 val;
+    u1 ret;
+    u1 val;
 
-    REG_SIO_A_CMD = SIO_REG_RR0;    // RR0選択
-    val = REG_SIO_A_CMD;            // RR0読み込み
+    ret = RX_OK;
+
+    // RR0選択
+    SIO_A_CMD.REG.BYTE = SIO_RR0;
+    // RR0 bit0(データ受信フラグ)読み込み
+    val = SIO_A_CMD.REG.BIT.B0;
 
     // 受信データがある間データ詰める
-    while( val & RR0_BIT_0_RX_CAHRACTER_AVAILABLE ){
+    while( val != FALSE ){
         // SIO A データレジスタからデータ取得
-        *p_rx_buf = REG_PIO_A_DAT;
+        *p_rx_buf = PIO_A_DAT.REG.BYTE;
         p_rx_buf++;
         len++;
+
+        // RR0選択
+        SIO_A_CMD.REG.BYTE = SIO_RR0;
+        // RR0 bit0(データ受信フラグ)読み込み
+        val = SIO_A_CMD.REG.BIT.B0;
     }
+
+    return (ret);
 }

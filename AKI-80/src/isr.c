@@ -15,7 +15,6 @@ void ISR_NMI()
 /**
  * @brief 外部割込みISR
  * 
- * @return __interrupt 
  */
 __interrupt void ISR_Ext_Int()
 {

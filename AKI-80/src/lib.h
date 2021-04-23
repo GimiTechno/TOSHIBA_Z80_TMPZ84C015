@@ -7,11 +7,11 @@
 #include "common.h"
 
 // memset()
-void* lib_memset(void *a_buf, uint8 val,size_t size);
+void* lib_memset(void *a_buf, u1 val,size_t size);
 #define MEMSET  lib_memset
 
 // strlen()
-uint16 lib_strlen( uint8 *p_buf );
+u2 lib_strlen( u1 *p_buf );
 #define STRLEN  lib_strlen
 
 #endif /* _LIB_H_ */

@@ -8,8 +8,8 @@ void drv_ctc_init( void )
 {
     /* CTC 0 */
     // SIO Aのボーレートジェネレータ（9600bps生成）として初期化
-    REG_CTC_0 = CTC_CMD_PSR_1DIV16;         /* タイマモード ( プリスケーラ 1/16 ) */
-    REG_CTC_0 = CTC_CMD_CLOCK_DIV_1P5;      /* クロック分周1/5 (153.6KHz　=　9600bps) */
+    CTC_0.REG.BYTE = CTC_CMD_PSR_1DIV16;         /* タイマモード ( プリスケーラ 1/16 ) */
+    CTC_0.REG.BYTE = CTC_CMD_CLOCK_DIV_1P5;      /* クロック分周1/5 (153.6KHz　=　9600bps) */
 
     /* CTC 1 */
 

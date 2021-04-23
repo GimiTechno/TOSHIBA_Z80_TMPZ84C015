@@ -16,7 +16,7 @@ void drv_wdt_init(void)
 #pragma inline drv_wdt_clear
 void drv_wdt_clear(void)
 {
-    REG_WDTCR = WDT_CLEAR;
+    WDTCR.REG.BYTE = WDT_CLEAR;
 }
 
 /**
@@ -26,7 +26,7 @@ void drv_wdt_clear(void)
 void drv_wdt_start(void)
 {
     // WDT有効（Bit7セット）
-    REG_WDTER |= BIT_7;
+    WDTER.REG.BIT.B7 = ON;
 }
 
 /**
@@ -37,10 +37,10 @@ void drv_wdt_start(void)
 void drv_wdt_stop(void)
 {
     // WDT無効（Bit7クリア）
-    REG_WDTER &= ~BIT_7;
+    WDTER.REG.BIT.B7 = OFF;
 
     NOP();
 
     // WDT動作停止
-    REG_WDTCR = WDT_STOP;
+    WDTCR.REG.BYTE = WDT_STOP;
 }
