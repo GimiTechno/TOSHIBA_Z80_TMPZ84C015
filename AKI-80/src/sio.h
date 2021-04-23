@@ -80,8 +80,8 @@
 // 受信データ長(D7,D6=1で8bit)
 #define WR3_BIT_7_RX_CHAR_LENGTH_H          BIT_7
 #define WR3_BIT_6_RX_CHAR_LENGTH_L          BIT_6
-
 #define WR3_BIT_5_AUTO_ENABLE               BIT_5
+
 #define WR3_BIT_4_ENTER_HUNT_PHASE          BIT_4
 #define WR3_BIT_3_RX_CRC                    BIT_3
 #define WR3_BIT_2_ADDR_SERCH_MODE           BIT_2

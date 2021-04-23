@@ -22,18 +22,19 @@ void drv_sio_init( void )
     /* -------------------------------------------------------------------------------- */
     /* SIO A 初期化 */
     /* -------------------------------------------------------------------------------- */
-    SIO_A_CMD.REG.BYTE = SIO_CMD_RESET;                  // SIO A リセット
+    // Reset
+    SIO_A_CMD.REG.BYTE = SIO_CMD_RESET;
 
     // WR1(割込み有効・無効)
     SIO_A_CMD.REG.BYTE = SIO_WR1;
 #ifdef SIO_INT_ENABLE
-    SIO_A_CMD.REG.BYTE |= (WR1_BIT_4_RX_INT_MODE_H    /* 受信割込み */
+    SIO_A_CMD.REG.BYTE |= ( WR1_BIT_4_RX_INT_MODE_H    /* 受信割込み */
                             | WR1_BIT_1_TX_INT_ENABLE   /* 送信割込み */
-                            | WR1_BIT_0_INT_ENABLE);     /* 外部割込み */
+                            | WR1_BIT_0_INT_ENABLE );     /* 外部割込み */
 #else
-    SIO_A_CMD.REG.BYTE &= ~(WR1_BIT_4_RX_INT_MODE_H /* 受信割込み */
+    SIO_A_CMD.REG.BYTE &= ~( WR1_BIT_4_RX_INT_MODE_H /* 受信割込み */
                             | WR1_BIT_1_TX_INT_ENABLE   /* 送信割込み */
-                            | WR1_BIT_0_INT_ENABLE);    /* 外部割込み */
+                            | WR1_BIT_0_INT_ENABLE );    /* 外部割込み */
 #endif
 
     // WR2(割込み要因・割込みベクタ)
@@ -44,13 +45,14 @@ void drv_sio_init( void )
 
     // WR3
     SIO_A_CMD.REG.BYTE = SIO_WR3;
-    SIO_A_CMD.REG.BYTE |= (WR3_BIT_7_RX_CHAR_LENGTH_H // 受信データ長8bit
-                            | WR3_BIT_0_RX_ENABLE);   // 受信 有効
+    SIO_A_CMD.REG.BYTE |= ( WR3_BIT_7_RX_CHAR_LENGTH_H    // 受信データ長8bit
+                            | WR3_BIT_6_RX_CHAR_LENGTH_L
+                            | WR3_BIT_0_RX_ENABLE );     // 受信 有効
 
     // WR4
     SIO_A_CMD.REG.BYTE = SIO_WR4;
-    SIO_A_CMD.REG.BYTE |= (WR4_BIT_6_CLOCK_MODE_L     // Clock = x16
-                            | WR4_BIT_2_STOP_BIT_L);  // ストップビット 1
+    SIO_A_CMD.REG.BYTE |= ( WR4_BIT_6_CLOCK_MODE_L     // Clock = x16
+                            | WR4_BIT_2_STOP_BIT_L );  // ストップビット 1
 
     // WR5
     SIO_A_CMD.REG.BYTE = SIO_WR5;                    // WR5選択
@@ -58,16 +60,26 @@ void drv_sio_init( void )
     // 2021年現在、フロー制御はいらんからNOP
     // NOP
 #else
-    SIO_A_CMD.REG.BYTE |=  (WR5_BIT_6_TX_CHAR_LENGTH_H // 送信データ 8bit(bit6,5=1)
+    SIO_A_CMD.REG.BYTE |=  ( WR5_BIT_7_DTR                  // DTR 
+                            | WR5_BIT_6_TX_CHAR_LENGTH_H    // 送信データ 8bit(bit6,5=1)
                             | WR5_BIT_5_TX_CHAR_LENGTH_L
-                            | WR5_BIT_3_TX_ENABLE);   // 送信有効
+                            | WR5_BIT_3_TX_ENABLE           // 送信有効
+                            | WR5_BIT_1_RTS);               // RTS
 #endif
 
-#if 0
     /* -------------------------------------------------------------------------------- */
     /* SIO B 初期化 */
     /* -------------------------------------------------------------------------------- */
-    SIO_B_CMD = SIO_CMD_RESET;                  // リセット
+    // Reset
+    SIO_B_CMD.REG.BYTE = SIO_CMD_RESET;
+#if 0
+    // WR1
+    SIO_B_CMD.REG.BYTE = SIO_WR1;
+    SIO_B_CMD.REG.BYTE = 0x00;      // DISABLE STATUS/AFFECTS VECTOR
+
+    // WR2
+    SIO_B_CMD.REG.BYTE = SIO_WR2;
+    //SIO_B_CMD.REG.BYTE = (割込みベクタ & 0x00FF);
 #endif
 }
 

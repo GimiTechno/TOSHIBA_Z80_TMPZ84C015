@@ -1,6 +1,21 @@
 #include "tmpz84c015.h"
 
 /**
+ * @brief S/W Delay（CPUサイクル数だけ待ち）
+ * 
+ * @param cycle CPU サイクル
+ */
+void delay(u2 cycle)
+{
+    u2 cnt;
+
+    for(cnt = 0; cnt < cycle;cnt++)
+    {
+        NOP();
+    }
+}
+
+/**
  * @brief 割込み許可
  * 
  */

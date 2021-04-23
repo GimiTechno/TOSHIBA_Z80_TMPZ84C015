@@ -8,7 +8,7 @@
 /* ------------------------------------------ */
 #define DEBUG_Z80            /* デバッグ、テストロジック有効 */
 // #define INT_ENABLE           /* 割込み有効 */
-#define WDT_ENABLE           /* WDT有効 */
+// #define WDT_ENABLE           /* WDT有効 */
 
 #ifdef INT_ENABLE
     #define CTC_INT_ENABLE   /* PIO 割り込み有効 */
@@ -68,5 +68,7 @@ void EI();
 // DI(割込みマスク)
 void DI();
 /*********************************************/
+// delay Fucn
+void delay(u2 cycle);
 
 #endif /* _TMPZ84C015_H_ */

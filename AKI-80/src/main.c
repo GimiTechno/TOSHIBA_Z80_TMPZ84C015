@@ -14,6 +14,7 @@
 /* マクロ */
 #define TX_BUF_SIZE    32    // 送信バッファサイズ
 #define RX_BUF_SIZE    128    // 受信バッファサイズ
+#define DELAY_CYCLE    1024
 
 /* 関数宣言 */
 // XCC-Vコンパイラ専用
@@ -35,25 +36,8 @@ static void port_test(void);
 /* 変数宣言 */
 static u1 s_tx_buf[TX_BUF_SIZE];     /* SIO TXバッファ */
 static u1 s_rx_buf[RX_BUF_SIZE];     /* SIO RXバッファ */
-
-/**
- * @brief H/W初期化
- * 
- */
-static void app_hw_init(void)
-{
-    /* CTC 初期化 */
-    drv_ctc_init();
-
-    /* PIO 初期化 */
-    drv_pio_init();
-
-    /* SIO 初期化 */
-    drv_sio_init();
-
-    /* WDT 初期化 */
-    drv_wdt_init();
-}
+volatile char *g_test_buf_1 ={"TEST PROG\r\n"};
+volatile char *g_test_buf_2 ={"Z80 AKI-80 TMPZ84C015BF-12\r\n"};
 
 /**
  * @brief アプリ初期化
@@ -103,30 +87,51 @@ static void app_sio_main(void)
 #ifdef DEBUG_Z80
 static void port_test(void)
 {
-#if 1
-        PIO_A_DAT.REG.BIT.B7 = ~PIO_A_DAT.REG.BIT.B7;
-        PIO_A_DAT.REG.BIT.B6 = ~PIO_A_DAT.REG.BIT.B6;
-        PIO_A_DAT.REG.BIT.B5 = ~PIO_A_DAT.REG.BIT.B5;
-        PIO_A_DAT.REG.BIT.B4 = ~PIO_A_DAT.REG.BIT.B4;
-        PIO_A_DAT.REG.BIT.B3 = ~PIO_A_DAT.REG.BIT.B3;
-        PIO_A_DAT.REG.BIT.B2 = ~PIO_A_DAT.REG.BIT.B2;
-        PIO_A_DAT.REG.BIT.B1 = ~PIO_A_DAT.REG.BIT.B1;
-        PIO_A_DAT.REG.BIT.B0 = ~PIO_A_DAT.REG.BIT.B0;
+#if 0
+        PIO_A_DAT.REG.BIT.B7 &= ~PIO_A_DAT.REG.BIT.B7;
+        PIO_A_DAT.REG.BIT.B6 &= ~PIO_A_DAT.REG.BIT.B6;
+        PIO_A_DAT.REG.BIT.B5 &= ~PIO_A_DAT.REG.BIT.B5;
+        PIO_A_DAT.REG.BIT.B4 &= ~PIO_A_DAT.REG.BIT.B4;
+        PIO_A_DAT.REG.BIT.B3 &= ~PIO_A_DAT.REG.BIT.B3;
+        PIO_A_DAT.REG.BIT.B2 &= ~PIO_A_DAT.REG.BIT.B2;
+        PIO_A_DAT.REG.BIT.B1 &= ~PIO_A_DAT.REG.BIT.B1;
+        PIO_A_DAT.REG.BIT.B0 &= ~PIO_A_DAT.REG.BIT.B0;
 
-        PIO_B_DAT.REG.BIT.B7 = ~PIO_B_DAT.REG.BIT.B7;
-        PIO_B_DAT.REG.BIT.B6 = ~PIO_B_DAT.REG.BIT.B6;
-        PIO_B_DAT.REG.BIT.B5 = ~PIO_B_DAT.REG.BIT.B5;
-        PIO_B_DAT.REG.BIT.B4 = ~PIO_B_DAT.REG.BIT.B4;
-        PIO_B_DAT.REG.BIT.B3 = ~PIO_B_DAT.REG.BIT.B3;
-        PIO_B_DAT.REG.BIT.B2 = ~PIO_B_DAT.REG.BIT.B2;
-        PIO_B_DAT.REG.BIT.B1 = ~PIO_B_DAT.REG.BIT.B1;
-        PIO_B_DAT.REG.BIT.B0 = ~PIO_B_DAT.REG.BIT.B0;
+        PIO_B_DAT.REG.BIT.B7 &= ~PIO_B_DAT.REG.BIT.B7;
+        PIO_B_DAT.REG.BIT.B6 &= ~PIO_B_DAT.REG.BIT.B6;
+        PIO_B_DAT.REG.BIT.B5 &= ~PIO_B_DAT.REG.BIT.B5;
+        PIO_B_DAT.REG.BIT.B4 &= ~PIO_B_DAT.REG.BIT.B4;
+        PIO_B_DAT.REG.BIT.B3 &= ~PIO_B_DAT.REG.BIT.B3;
+        PIO_B_DAT.REG.BIT.B2 &= ~PIO_B_DAT.REG.BIT.B2;
+        PIO_B_DAT.REG.BIT.B1 &= ~PIO_B_DAT.REG.BIT.B1;
+        PIO_B_DAT.REG.BIT.B0 &= ~PIO_B_DAT.REG.BIT.B0;
 #else
         PIO_A_DAT.REG.BYTE = ~PIO_A_DAT.REG.BYTE;
         PIO_B_DAT.REG.BYTE = ~PIO_B_DAT.REG.BYTE;
 #endif
 }
 #endif
+
+/**
+ * @brief H/W初期化
+ * 
+ */
+static void app_hw_init(void)
+{
+    /* CTC 初期化 */
+    drv_ctc_init();
+
+    /* PIO 初期化 */
+    drv_pio_init();
+
+    /* SIO 初期化 */
+    drv_sio_init();
+
+#ifdef WDT_ENABLE
+    /* WDT 初期化 */
+    drv_wdt_init();
+#endif
+}
 
 /**
  * @brief メインループ
@@ -143,19 +148,24 @@ main()
 #ifdef WDT_ENABLE
         WDT_CLR();
 #endif
-
 	// アプリ初期化処理
-	app_init();
+
+	// app_init();
 
     // メインループ
     while (1)
     {
-        // SIO Main (Polling)
-        app_sio_main();
-
 #ifdef DEBUG_Z80
         // Port Test All Port Toggle
         port_test();
+        delay(DELAY_CYCLE);
+#if 1
+        drv_sio_tx(g_test_buf_1,12);
+        drv_sio_tx(g_test_buf_1,29);
+#endif
+#else
+        // SIO Main (Polling)
+        app_sio_main();
 #endif
 
 #ifdef WDT_ENABLE
